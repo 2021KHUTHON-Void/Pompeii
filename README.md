@@ -1,1 +1,1 @@
-<img src = "./Pompeii/images/ezgifcom-gif-maker.gif" width =30% />
+<img src = "../../Pompeii/images/ezgifcom-gif-maker.gif" width =30% />
