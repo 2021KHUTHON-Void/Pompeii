@@ -21,7 +21,7 @@ class MicrophoneStream(object):
     def __init__(self, rate, chunk):
         self._rate = rate
         self._chunk = chunk
-
+        self.status = 0 
         # Create a thread-safe buffer of audio data
         self._buff = queue.Queue()
         self.closed = True
@@ -57,8 +57,12 @@ class MicrophoneStream(object):
 
     def _fill_buffer(self, in_data, frame_count, time_info, status_flags):
         """Continuously collect data from the audio stream, into the buffer."""
-        self._buff.put(in_data)
-        return None, pyaudio.paContinue
+        if self.status ==0:
+            self._buff.put(in_data)
+            return None, pyaudio.paContinue
+        elif self.status == 1:
+            self._buff.put(b'')
+            return None, pyaudio.paContinue
 
     def generator(self):
         while not self.closed:
@@ -85,6 +89,10 @@ class MicrophoneStream(object):
 
 def listen_print_loop(responses, stream):
     num_chars_printed = 0
+    voice_path = "./pompeii_voice/"
+    p_state = 0
+    disasters = ["지진", "홍수"]
+    quiz_state = 0
     for response in responses:
         if not response.results:
             continue
@@ -115,16 +123,68 @@ def listen_print_loop(responses, stream):
         else:
             print(transcript + overwrite_chars)
             v_cmd = transcript + overwrite_chars
-            if("하이" in v_cmd):
-                stream.status = 1
-                print("**")
-                playsound('start.mp3')
-                stream.status = 0
-            else:
-                stream.status = 1
-                print("***")
-                playsound('unknown_cmd.mp3')
-                stream.status = 0
+            if(p_state == 0):
+                if("하이 폼페이" in v_cmd):
+                    stream.status = 1
+                    playsound(voice_path+'start.mp3')
+                    stream.status = 0
+                    p_state = 1
+                else:
+                    stream.status = 1
+                    playsound(voice_path+'unknown_cmd.mp3')
+                    stream.status = 0
+            if(p_state == 1):
+                if("퀴즈" in v_cmd):
+                    stream.status = 1
+                    playsound(voice_path+'selectDisaster.mp3')
+                    stream.status = 0
+                    p_state = 2
+                elif("다른거" in v_cmd):
+                    stream.statue = 1
+                    stream.statue = 0
+                else:
+                    stream.status = 1
+                    playsound(voice_path+'unknown_cmd.mp3')
+                    stream.status = 0
+            if(p_state == 2):
+                # Quiz Start
+                if(v_cmd.strip() in disasters):
+                    stream.status = 1
+                    playsound(voice_path + 'quizStart.mp3')
+                    stream.status = 0
+                    p_state = 3
+                    quiz_state = 0
+                    answer_cnt = 0
+            if(p_state ==3):
+                if(quiz_state == 3):
+                    # Quiz End
+                    if(answer_cnt == 0):
+                        stream.status = 1
+                        playsound(voice_path + 'zeroAnswer.mp3')
+                        stream.status = 0
+                    elif(answer_cnt == 1):
+                        stream.status = 1
+                        playsound(voice_path + 'oneAnswer.mp3')
+                        stream.status = 0
+                    elif(answer_cnt == 2):
+                        stream.staus = 1
+                        playsound(voice_path + 'twoAnswer.mp3')
+                        stream.statue = 0
+                    else:
+                        stream.status = 1
+                        playsound(voice_path + 'allAnswer.mp3')
+                        stream.status = 0
+                    p_state = 0
+                    quiz_state = 0
+                else:
+                    quiz_state +=1
+                    # QUIZ
+
+
+                
+            
+                
+
             # Exit recognition if any of the transcribed phrases could be
             # one of our keywords.
             if re.search(r"\b(exit|quit)\b", transcript, re.I):
