@@ -27,7 +27,7 @@ _하이, 폼페이. 퀴즈 내 줘!_<br>
 <img  width =100% />
 
 ## 폼페이 아키텍쳐 및 핵심 기술
-<p align=center><img width="600" src = "../../../Pompeii/blob/main/images/architecture.png"></p>
+<p align=center><img width="400" src = "../../../Pompeii/blob/main/images/architecture.png"></p>
 
 ### Sentence Embedding
 
