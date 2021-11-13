@@ -152,7 +152,7 @@ def listen_print_loop(responses, stream):
                     stream.status = 1
                     ws.send({"side":"left","text":"재난 관련 최신 뉴스를 말씀드리겠습니다."})
                     playsound(voice_path+"pre_news.mp3")
-                    ws.send({"side":"left","text":"인천 계양구 3층짜리 빌라서 불... 40대 주민 사망"})
+                    ws.send({"side":"left","text":NEWS})
                     playsound(voice_path+'news.mp3')
                     stream.status = 0
                     p_state=0
@@ -190,7 +190,7 @@ def listen_print_loop(responses, stream):
                         stream.status = 1
                         ws.send({"side":"left","text":"틀렸습니다."})
                         playsound(voice_path + 'wrong.mp3')
-                        ws.send({"side":"add","text":"정답은 창문을 테이프로 고정한다. 입니다."})
+                        ws.send({"side":"add","text":CORRECT_ANSWER})
                         playsound(voice_path+'typhoonA2.mp3')
                         stream.status = 0
                     # Quiz End
